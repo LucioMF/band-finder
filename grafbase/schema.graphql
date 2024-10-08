@@ -1,0 +1,44 @@
+schema
+  @auth(
+    providers: [
+      { type: jwt, issuer: "nextauth", secret: "{{ env.NEXTAUTH_SECRET }}" }
+    ]
+    rules: [{ allow: private }]
+  ) {
+  query: Query
+}
+
+type Message {
+  id: ID!
+  username: String!
+  avatar: URL
+  body: String!
+  likes: Int @default(value: 0)
+  dislikes: Int @default(value: 0)
+  createdAt: String
+}
+
+type MessageRes {
+  message: Message
+}
+
+type Edges {
+  node: Message 
+}
+
+# define the querys that are supported
+type Query {
+  messageCollection(last: ID): [Edges] @resolver(name: "messageCollection")
+}
+
+input Input {
+  username: String!
+  avatar: URL
+  body: String!
+}
+
+# define wich mutations are supported
+type Mutation {
+  messageCreate(input: Input!): Message @resolver(name: "messageCreate")
+
+}
