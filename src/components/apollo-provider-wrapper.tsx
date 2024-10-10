@@ -8,6 +8,7 @@ import {
   split,
   from,
 } from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
 import { SSELink, isLiveQuery } from "@grafbase/apollo-link";
 import { getOperationAST } from "graphql";
 import { setContext } from "@apollo/client/link/context";
@@ -38,12 +39,21 @@ export const ApolloProviderWrapper = ({ children }: PropsWithChildren) => {
     return new ApolloClient({
       link: from([
         authMiddleware,
+        onError(({ graphQLErrors, networkError }) => {
+          if (networkError) {
+            console.log(networkError);
+          }
+
+          if (graphQLErrors) {
+            console.log(graphQLErrors)
+          }
+        }),
         split(
           ({ query, operationName, variables }) =>
             isLiveQuery(getOperationAST(query, operationName), variables),
           sseLink,
           httpLink
-        ),
+        )
       ]),
       cache: new InMemoryCache(),
     });
