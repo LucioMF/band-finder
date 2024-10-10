@@ -8,9 +8,7 @@ const AddNewMessageMutation = gql`
     messageCreate(
       input: { username: $username, avatar: $avatar, body: $body }
     ) {
-      message {
         id
-      }
     }
   }
 `;
